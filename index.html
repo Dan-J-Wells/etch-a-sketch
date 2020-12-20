@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <style>
+      *, *::before, *::after {
+        margin: 0; 
+        padding: 0;
+      }
+      #reset {
+        box-sizing: border-box; 
+        position: fixed; 
+        top: 10px; 
+        left: 10px; 
+        width: 50px; 
+        height: 30px;
+      }
+      #reset:hover {
+        opacity: 0.1;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      const main = document.createElement('div');
+      main.id = 'main';
+      document.body.appendChild(main);
+      main.style.width = '100vw';
+      main.style.height = '100vh';
+      main.style.display = 'grid';
+
+      const reset = document.createElement('button');
+      reset.id = 'reset';
+      reset.textContent = 'Reset';
+      document.body.appendChild(reset);
+
+      createGrid(16);
+
+      main.addEventListener('mouseover', hoverFade);
+      reset.addEventListener('click', resetPress);
+
+      function createGrid(num) {
+        main.style.gridTemplateColumns = `repeat(${num}, 1fr)`;
+        main.style.gridTemplateRows = `repeat(${num}, 1fr)`;
+
+        for (let i = 1; i <= num; i++) {
+          for (let j = 1; j <= num; j++) {
+            let tempDiv = document.createElement('div');
+            main.appendChild(tempDiv);
+            tempDiv.style.backgroundColor = 'black';
+            tempDiv.classList.add('cell');
+            tempDiv.style.gridArea = `${i} / ${j} / ${i + 1} / ${j + 1}`;
+          }
+        }
+      }
+
+      function hoverFade(e) {
+        if (e.target.style.backgroundColor === 'white') return;
+
+        const currentColor = window.getComputedStyle(e.target).getPropertyValue('background-color');
+        e.target.style.backgroundColor = rgbStringIncrement(15, 15, 15, currentColor);
+      }
+
+      function rgbStringIncrement(r, g, b, string) {
+        let newColor = string.replace(/[rgb( )]/g, '').split(',');
+
+        for (i = 0; i < newColor.length; i++) {
+          newColor[i] = +newColor[i] + +arguments[i] + '';
+        }
+        return `rgb(${newColor[0]}, ${newColor[1]}, ${newColor[2]})`;
+      }
+
+      function resetPress() {
+        const newGrid = persistentPrompt();
+        main.innerHTML = '';
+        createGrid(newGrid);
+      }
+
+      function persistentPrompt() {
+        let input;
+        while (!input) {
+          input = prompt('Enter a positive numerical value of 100 or less.');
+          if (!input) {
+            alert('You must input a value.');
+          }
+          else {
+            return inputNumCheck(input);
+          }
+        }
+      }
+
+      function inputNumCheck(input) {
+        if (!isNaN(input) && +input <= 100 && +input > 0) return +input;
+
+        alert('Input must be a positive numerical value of 100 or less.');
+        persistentPrompt();
+      }
+
+    </script>
+  </body>
+</html>
